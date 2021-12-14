@@ -16,7 +16,7 @@ import GraphTitle from "./GraphTitle";
 import TagsPanel from "./TagsPanel";
 
 import "react-sigma-v2/lib/react-sigma-v2.css";
-import { GrClose } from "react-icons/gr";
+import { GrClose, GrGraphQl } from "react-icons/gr";
 import { BiRadioCircleMarked, BiBookContent } from "react-icons/bi";
 import { BsArrowsFullscreen, BsFullscreenExit, BsZoomIn, BsZoomOut } from "react-icons/bs";
 
@@ -91,7 +91,18 @@ const Root: FC = () => {
                 customZoomOut={<BsZoomOut />}
                 customZoomCenter={<BiRadioCircleMarked />}
               />
+              <div className="ico">
+                <button
+                  type="button"
+                  className=""
+                  onClick={() => setHoveredNode("")}
+                  title="Reset Filters"
+                >
+                  <GrGraphQl />
+                </button>
+              </div>
             </div>
+
             <div className="contents">
               <div className="ico">
                 <button
@@ -103,6 +114,18 @@ const Root: FC = () => {
                   <GrClose />
                 </button>
               </div>
+              <div className="ico">
+                <button
+                  type="button"
+                  className="ico hide-contents"
+                  onClick={() => setShowContents(false)}
+                  title="Show caption and description"
+                >
+                  <GrClose />
+                </button>
+              </div>
+              
+              
               <GraphTitle filters={filtersState} />
               <div className="panels">
                 <SearchField setHoveredNode={setHoveredNode} filters={filtersState} />

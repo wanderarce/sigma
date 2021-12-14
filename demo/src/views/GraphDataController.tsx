@@ -52,7 +52,6 @@ const GraphDataController: FC<{ dataset: Dataset; filters: FiltersState }> = ({ 
     const { clusters, tags } = filters;
   
     graph.forEachNode((node, { cluster, tag }) => {
-      debugger
       graph.setNodeAttribute(node, "hidden", !clusters[cluster] || !tags[tag]);
     });
   }, [graph, filters]);

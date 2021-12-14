@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { MdCategory } from "react-icons/md";
+import { MdBusiness, MdCategory } from "react-icons/md";
 
 import { FiltersState, Tag } from "../types";
 import { useSigma } from "react-sigma-v2";
@@ -46,7 +46,7 @@ const TagsPanel: FC<{
     <Panel
       title={
         <>
-          <MdCategory className="text" /> Companies
+          <MdBusiness className="text" /> Companies
           {visibleTagsCount < tags.length ? (
             <span className="text-muted text-small">
               {" "}
