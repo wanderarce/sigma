@@ -25,13 +25,13 @@ const SearchField: FC<{
   const refreshValues = () => {
     const newValues: Array<{ id: string; label: string }> = [];
     const lcSearch = search.toLowerCase();
-    if (!selected && search.length > 1) {
+    if (!selected && search.length > 3) {
       sigma.getGraph().forEachNode((key: string, attributes: Attributes): void => {
         if(attributes.hidden){
-          attributes.color = "#3e3e3e";
+          attributes.color = "#ccc";
         }
         if (!attributes.hidden && attributes.label && attributes.label.toLowerCase().indexOf(lcSearch) === 0)
-           newValues.push({ id: key, label: attributes.label });
+           if(newValues.length <100) newValues.push({ id: key, label: attributes.label });
        });
     }
     
@@ -62,9 +62,8 @@ const SearchField: FC<{
     console.log(selected);
     if (nodeDisplayData){
       
-      
       sigma.getCamera().animate(
-        { ...nodeDisplayData, ratio: 0.07 },
+        { ...nodeDisplayData, ratio: 0.05 },
         {
           duration: 600,
         },
@@ -86,7 +85,7 @@ const SearchField: FC<{
     } else {
       setSelected(null);
       setSearch(searchString);
-      refreshValues();
+    
     }
   };
 

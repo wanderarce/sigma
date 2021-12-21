@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { MdBusiness, MdCategory } from "react-icons/md";
+import { MdBusiness } from "react-icons/md";
 
 import { FiltersState, Tag } from "../types";
 import { useSigma } from "react-sigma-v2";
@@ -18,7 +18,8 @@ const TagsPanel: FC<{
 
   const nodesPerTag = useMemo(() => {
     const index: Record<string, number> = {};
-    graph.forEachNode((_, { tag }) => (index[tag] = (index[tag] || 0) + 1));
+    graph.forEachNode((_, { tag }) => {
+      (index[tag] = (index[tag] || 0) + 1)});
     return index;
   }, []);
 
@@ -26,13 +27,19 @@ const TagsPanel: FC<{
   const visibleTagsCount = useMemo(() => Object.keys(filters.tags).length, [filters]);
 
   const [visibleNodesPerTag, setVisibleNodesPerTag] = useState<Record<string, number>>(nodesPerTag);
+  
   useEffect(() => {
     // To ensure the graphology instance has up to data "hidden" values for
     // nodes, we wait for next frame before reindexing. This won't matter in the
     // UX, because of the visible nodes bar width transition.
     requestAnimationFrame(() => {
       const index: Record<string, number> = {};
-      graph.forEachNode((_, { tag, hidden }) => !hidden && (index[tag] = (index[tag] || 0) + 1));
+      graph.forEachNode((_, { tag, hidden }) => {
+        // console.log(tag);
+        // console.log(tag);
+        
+        !hidden && (index[tag] = (index[tag] || 0) + 1);
+      });
       setVisibleNodesPerTag(index);
     });
   }, [filters]);

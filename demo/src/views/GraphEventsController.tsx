@@ -1,27 +1,42 @@
 import { useRegisterEvents, useSigma } from "react-sigma-v2";
 import { FC, useEffect } from "react";
 import { CameraState } from "sigma/types";
+import { Edge } from "../types";
+import NodesPanel from "./NodesPanel";
 
 function getMouseLayer() {
   return document.querySelector(".sigma-mouse");
 }
 
-const GraphEventsController: FC<{ setHoveredNode: (node: string | null) => void }> = ({ setHoveredNode, children }) => {
+const GraphEventsController: FC<{ edges: Edge[];
+  setEdgesSelecteds:(edges: Edge[] | null) => void;
+  setHoveredNode: (node: string | null) => void;
+  setCurrentNode: (node: string | null) => void;
+}> = ({setCurrentNode, edges, setEdgesSelecteds, setHoveredNode, children }) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
   const registerEvents = useRegisterEvents();
-
+  
   /**
    * Initialize here settings that require to know the graph and/or the sigma
    * instance:
    */
   useEffect(() => {
-    debugger
     registerEvents({
       clickNode({ node }) {
-        //if (graph.getNodeAttribute(node, "hidden")) {   
-          setHoveredNode(node);
-        //}
+        setCurrentNode(node);
+        setHoveredNode(node);
+        var temp = Array<Edge>();
+           
+        debugger
+        edges.forEach((edge)=>{
+          if(edge.edge[0] == node) {
+            temp.push(edge);
+          }
+        });
+
+        localStorage.setItem("edges",JSON.stringify(temp));
+        setEdgesSelecteds(temp);
         if (!graph.getNodeAttribute(node, "hidden")) {   
           //window.open(graph.getNodeAttribute(node, "URL"), "_blank");
         }

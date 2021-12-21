@@ -81,7 +81,7 @@ export const DEFAULT_SETTINGS: Settings = {
   enableEdgeHoverEvents: false,
 
   // Component rendering
-  defaultNodeColor: "#999",
+  defaultNodeColor: "#ccc",
   defaultNodeType: "circle",
   defaultEdgeColor: "#ccc",
   defaultEdgeType: "line",

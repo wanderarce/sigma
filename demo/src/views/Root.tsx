@@ -7,14 +7,15 @@ import { omit, mapValues, keyBy, constant } from "lodash";
 import GraphSettingsController from "./GraphSettingsController";
 import GraphEventsController from "./GraphEventsController";
 import GraphDataController from "./GraphDataController";
-import DescriptionPanel from "./DescriptionPanel";
-import { Dataset, FiltersState } from "../types";
+import NodesPanel from "./NodesPanel";
+import IComponentProps from "../components/connections/Connections";
+import { Dataset, Edge, FiltersState, NodeData } from "../types";
 import ClustersPanel from "./ClustersPanel";
 import SearchField from "./SearchField";
 import drawLabel from "../canvas-utils";
 import GraphTitle from "./GraphTitle";
 import TagsPanel from "./TagsPanel";
-
+import Connections from "../components/connections/Connections";
 import "react-sigma-v2/lib/react-sigma-v2.css";
 import { GrClose, GrGraphQl } from "react-icons/gr";
 import { BiRadioCircleMarked, BiBookContent } from "react-icons/bi";
@@ -24,9 +25,13 @@ const Root: FC = () => {
   const [showContents, setShowContents] = useState(false);
   const [dataReady, setDataReady] = useState(false);
   const [dataset, setDataset] = useState<Dataset | null>(null);
+  const [edgesSelecteds, setEdgesSelecteds] = useState<Edge[] | null>()
+  const [currrentNode, setCurrentNode] = useState<string | null>(null)
   const [filtersState, setFiltersState] = useState<FiltersState>({
     clusters: {},
     tags: {},
+    nodes:{},
+    edges: {}
   });
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
@@ -39,9 +44,12 @@ const Root: FC = () => {
         setFiltersState({
           clusters: mapValues(keyBy(dataset.clusters, "key"), constant(true)),
           tags: mapValues(keyBy(dataset.tags, "key"), constant(true)),
+          nodes: mapValues(keyBy(dataset.nodes, "key"), constant(true)),
+          edges: mapValues(keyBy(dataset.edges, "edge"), constant(true)),
         });
         requestAnimationFrame(() => setDataReady(true));
       });
+      
   }, []);
 
   if (!dataset) return null;
@@ -63,8 +71,12 @@ const Root: FC = () => {
         }}
         className="react-sigma"
       >
-        <GraphSettingsController hoveredNode={hoveredNode} />
-        <GraphEventsController setHoveredNode={setHoveredNode} />
+        <GraphSettingsController hoveredNode={hoveredNode}  />
+        <GraphEventsController 
+        setCurrentNode={setCurrentNode}
+        setHoveredNode={setHoveredNode} edges={dataset.edges}
+          setEdgesSelecteds={setEdgesSelecteds}
+        />
         <GraphDataController dataset={dataset} filters={filtersState} />
 
         {dataReady && (
@@ -129,7 +141,28 @@ const Root: FC = () => {
               <GraphTitle filters={filtersState} />
               <div className="panels">
                 <SearchField setHoveredNode={setHoveredNode} filters={filtersState} />
-                <DescriptionPanel />
+                {/* <DescriptionPanel /> */}
+                {/* <NodesPanel
+                  edgesSelecteds ={edgesSelecteds}
+                  nodes={dataset.nodes}
+                  filters={filtersState}
+                  setNodes={(nodes) =>
+                    setFiltersState((filters) => ({
+                      ...filters,
+                      nodes,
+                    }))
+                  }
+                  toggleNode={(node) => {
+                    setFiltersState((filters) => ({
+                      ...filters,
+                      nodes: filters.nodes[node] 
+                      ? omit(filters.nodes, node) 
+                      : { ...filters.nodes, [node]: true },
+                    }));
+                  }}
+                /> 
+ */}
+            <Connections title={"bla"} node={hoveredNode} />
                 <ClustersPanel
                   clusters={dataset.clusters}
                   filters={filtersState}

@@ -1,5 +1,5 @@
 export interface NodeData {
-  key: string;
+  key: number;
   label: string;
   tag: string;
   URL: string;
@@ -19,9 +19,14 @@ export interface Tag {
   image: string;
 }
 
+export interface Edge{
+  edge: Array<number>;
+  size: number;
+}
+
 export interface Dataset {
   nodes: NodeData[];
-  edges: [string, string][];
+  edges: Edge[];
   clusters: Cluster[];
   tags: Tag[];
 }
@@ -29,4 +34,9 @@ export interface Dataset {
 export interface FiltersState {
   clusters: Record<string, boolean>;
   tags: Record<string, boolean>;
+  nodes: Record<number, boolean>;
+  edges: Record<string, boolean>;
 }
+
+
+

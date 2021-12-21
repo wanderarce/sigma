@@ -4,7 +4,7 @@ import { FC, useEffect } from "react";
 import { drawHover } from "../canvas-utils";
 import useDebounce from "../use-debounce";
 
-const NODE_FADE_COLOR = "#bbb";
+const NODE_FADE_COLOR = "#ccc";
 const EDGE_FADE_COLOR = "#eee";
 
 const GraphSettingsController: FC<{ hoveredNode: string | null }> = ({ children, hoveredNode }) => {
