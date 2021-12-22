@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { SigmaContainer, ZoomControl, FullScreenControl } from "react-sigma-v2";
 
 import getNodeProgramImage from "sigma/rendering/webgl/programs/node.image";
@@ -7,36 +7,37 @@ import { omit, mapValues, keyBy, constant } from "lodash";
 import GraphSettingsController from "./GraphSettingsController";
 import GraphEventsController from "./GraphEventsController";
 import GraphDataController from "./GraphDataController";
-import NodesPanel from "./NodesPanel";
-import IComponentProps from "../components/connections/Connections";
-import { Dataset, Edge, FiltersState, NodeData } from "../types";
+import {  Dataset, Edge, FiltersState } from "../types";
 import ClustersPanel from "./ClustersPanel";
 import SearchField from "./SearchField";
 import drawLabel from "../canvas-utils";
 import GraphTitle from "./GraphTitle";
 import TagsPanel from "./TagsPanel";
-import Connections from "../components/connections/Connections";
 import "react-sigma-v2/lib/react-sigma-v2.css";
 import { GrClose, GrGraphQl } from "react-icons/gr";
 import { BiRadioCircleMarked, BiBookContent } from "react-icons/bi";
 import { BsArrowsFullscreen, BsFullscreenExit, BsZoomIn, BsZoomOut } from "react-icons/bs";
+import NodesPanel from "./NodesPanel";
 
 const Root: FC = () => {
   const [showContents, setShowContents] = useState(false);
   const [dataReady, setDataReady] = useState(false);
   const [dataset, setDataset] = useState<Dataset | null>(null);
-  const [edgesSelecteds, setEdgesSelecteds] = useState<Edge[] | null>()
-  const [currrentNode, setCurrentNode] = useState<string | null>(null)
+  const [edgesSelecteds, setEdgesSelecteds] = useState<Array<Edge>>([]);
   const [filtersState, setFiltersState] = useState<FiltersState>({
     clusters: {},
     tags: {},
     nodes:{},
     edges: {}
   });
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [connections, setConnections] = useState();
 
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+ 
+  
   // Load data on mount:
   useEffect(() => {
+    
     fetch(`${process.env.PUBLIC_URL}/dataset.json`)
       .then((res) => res.json())
       .then((dataset: Dataset) => {
@@ -47,11 +48,15 @@ const Root: FC = () => {
           nodes: mapValues(keyBy(dataset.nodes, "key"), constant(true)),
           edges: mapValues(keyBy(dataset.edges, "edge"), constant(true)),
         });
+        // setConnections({
+        //   children: getChildrens(hoveredNode, dataset.edges)
+        // });
         requestAnimationFrame(() => setDataReady(true));
       });
       
   }, []);
 
+  
   if (!dataset) return null;
 
   return (
@@ -73,8 +78,8 @@ const Root: FC = () => {
       >
         <GraphSettingsController hoveredNode={hoveredNode}  />
         <GraphEventsController 
-        setCurrentNode={setCurrentNode}
-        setHoveredNode={setHoveredNode} edges={dataset.edges}
+          setHoveredNode={setHoveredNode} 
+          edges={dataset.edges}
           setEdgesSelecteds={setEdgesSelecteds}
         />
         <GraphDataController dataset={dataset} filters={filtersState} />
@@ -142,9 +147,11 @@ const Root: FC = () => {
               <div className="panels">
                 <SearchField setHoveredNode={setHoveredNode} filters={filtersState} />
                 {/* <DescriptionPanel /> */}
-                {/* <NodesPanel
-                  edgesSelecteds ={edgesSelecteds}
+                <p> AA {edgesSelecteds}</p>
+                 <NodesPanel
+                  currentNode ={hoveredNode}
                   nodes={dataset.nodes}
+                  edgesSelecteds={edgesSelecteds}
                   filters={filtersState}
                   setNodes={(nodes) =>
                     setFiltersState((filters) => ({
@@ -161,8 +168,9 @@ const Root: FC = () => {
                     }));
                   }}
                 /> 
- */}
-            <Connections title={"bla"} node={hoveredNode} />
+ 
+                {/* <Connections title={"bla"} currentNode={hoveredNode} 
+                 /> */}
                 <ClustersPanel
                   clusters={dataset.clusters}
                   filters={filtersState}
@@ -207,3 +215,7 @@ const Root: FC = () => {
 };
 
 export default Root;
+
+
+
+

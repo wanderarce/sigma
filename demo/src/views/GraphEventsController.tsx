@@ -1,22 +1,32 @@
 import { useRegisterEvents, useSigma } from "react-sigma-v2";
 import { FC, useEffect } from "react";
 import { CameraState } from "sigma/types";
-import { Edge } from "../types";
-import NodesPanel from "./NodesPanel";
+import { Child, Edge, NodeData } from "../types";
 
 function getMouseLayer() {
   return document.querySelector(".sigma-mouse");
 }
 
 const GraphEventsController: FC<{ edges: Edge[];
-  setEdgesSelecteds:(edges: Edge[] | null) => void;
+  setEdgesSelecteds:(edges: Array<Edge>) => void;
   setHoveredNode: (node: string | null) => void;
-  setCurrentNode: (node: string | null) => void;
-}> = ({setCurrentNode, edges, setEdgesSelecteds, setHoveredNode, children }) => {
+  
+}> = ({edges, setEdgesSelecteds, setHoveredNode, children }) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
   const registerEvents = useRegisterEvents();
   
+  const getChildrens = (hoveredNode: string | null, edges: Edge[]) => {
+    var eds = Array<Edge>();
+    edges.forEach(edge =>{ 
+      if(edge.edge[0].toString() === hoveredNode){
+        debugger
+        eds.push(edge);
+      }
+  });
+    return eds;
+  }
+
   /**
    * Initialize here settings that require to know the graph and/or the sigma
    * instance:
@@ -24,19 +34,8 @@ const GraphEventsController: FC<{ edges: Edge[];
   useEffect(() => {
     registerEvents({
       clickNode({ node }) {
-        setCurrentNode(node);
         setHoveredNode(node);
-        var temp = Array<Edge>();
-           
-        debugger
-        edges.forEach((edge)=>{
-          if(edge.edge[0] == node) {
-            temp.push(edge);
-          }
-        });
-
-        localStorage.setItem("edges",JSON.stringify(temp));
-        setEdgesSelecteds(temp);
+        setEdgesSelecteds(getChildrens(node, edges));
         if (!graph.getNodeAttribute(node, "hidden")) {   
           //window.open(graph.getNodeAttribute(node, "URL"), "_blank");
         }

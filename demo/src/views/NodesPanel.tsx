@@ -8,14 +8,16 @@ import Panel from "./Panel";
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/all";
 
 const NodesPanel: FC<{
-  edgesSelecteds: Edge[] | null | undefined;
+  currentNode:any;
   nodes: NodeData[];
+  edgesSelecteds: Array<Edge>;
   filters: FiltersState;
   toggleNode: (node: number) => void;
   setNodes: (nodes: Record<number, boolean>) => void;
-}> = ({ edgesSelecteds, nodes, filters, toggleNode, setNodes }) => {
+}> = ({ currentNode, nodes, edgesSelecteds, filters, toggleNode, setNodes }) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
+  const [eds, setEds] = useState(Array<Edge>());
 
   const nodesPerNode = useMemo(() => {
     const index: Record<string, number> = {};
@@ -38,19 +40,13 @@ const NodesPanel: FC<{
     // UX, because of the visible nodes bar width transition.
     requestAnimationFrame(() => {
       const index: Record<number, number> = {};
-     // var edges = localStorage.getItem("edges");
-      debugger
-      if(edgesSelecteds !== undefined && edgesSelecteds != null)
-      edgesSelecteds.forEach(element => {
-        console.log(element.edge[0]);
-      });
-      // if(edges !== undefined && edges != null){
-      // let ourArray = JSON.parse(edges);
-      // console.log(ourArray);
-     //}
+      
+      console.log("E: " +edgesSelecteds);
+
+      //console.log(connections)
+      // var exist = filters.edges[currentNode];
+      // console.log("r: " + exist);
       graph.forEachNode((node, { key, hidden }) => {
-        
-        //var nodeExists = graph.getTargetAttributes(selected);
           !hidden && (index[key] = (index[key] || 0) + 1);
         
       
@@ -63,6 +59,8 @@ const NodesPanel: FC<{
     () => sortBy(nodes, (node) => (node.key === undefined ? Infinity : -nodesPerNode[node.key])),
     [nodes, nodesPerNode],
   );
+
+  
 
   return (
     <Panel
@@ -91,9 +89,12 @@ const NodesPanel: FC<{
           <AiOutlineCloseCircle /> Uncheck all
         </button>
       </p>
+      <p>Nó atual: {currentNode}</p>
+      
       <ul>
         {sortedNodes.map((node) => {
-          const nodesCount = nodesPerNode[node.key];
+          if(currentNode !== undefined && currentNode !== null && currentNode == node.key){
+            const nodesCount = nodesPerNode[node.key];
           const visibleNodesCount = visibleNodesPerNode[node.key] || 0;
           return (
             <li
@@ -128,6 +129,11 @@ const NodesPanel: FC<{
               </label>
             </li>
           );
+          } else{
+            return null;
+          }
+          
+          
         })}
       </ul>
     </Panel>

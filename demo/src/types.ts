@@ -39,4 +39,11 @@ export interface FiltersState {
 }
 
 
+export interface Connection{
+  children: Record<number, Child[]>; 
+}
 
+export interface Child {
+  node: NodeData;
+  size: number;
+}
