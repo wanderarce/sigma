@@ -2,6 +2,7 @@ import { useRegisterEvents, useSigma } from "react-sigma-v2";
 import { FC, useEffect } from "react";
 import { CameraState } from "sigma/types";
 import { Child, Edge, NodeData } from "../types";
+import { Attributes } from "graphology-types";
 
 function getMouseLayer() {
   return document.querySelector(".sigma-mouse");
@@ -10,8 +11,9 @@ function getMouseLayer() {
 const GraphEventsController: FC<{ edges: Edge[];
   setEdgesSelecteds:(edges: Array<Edge>) => void;
   setHoveredNode: (node: string | null) => void;
+  setConnections: (connections: Array<Attributes>) => void;
   
-}> = ({edges, setEdgesSelecteds, setHoveredNode, children }) => {
+}> = ({edges, setEdgesSelecteds, setHoveredNode, setConnections, children }) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
   const registerEvents = useRegisterEvents();
@@ -39,6 +41,14 @@ const GraphEventsController: FC<{ edges: Edge[];
         if (!graph.getNodeAttribute(node, "hidden")) {   
           //window.open(graph.getNodeAttribute(node, "URL"), "_blank");
         }
+        let connections= Array<Attributes>();
+        graph.forEachNeighbor(node, function(neighbor, attributes) {
+          debugger
+          console.log(neighbor, attributes);
+          connections.push(attributes);
+        });
+        setConnections(connections);
+        
       },
       // enterNode({ node }) {
       //   setHoveredNode(node);

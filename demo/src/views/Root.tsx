@@ -18,6 +18,7 @@ import { GrClose, GrGraphQl } from "react-icons/gr";
 import { BiRadioCircleMarked, BiBookContent } from "react-icons/bi";
 import { BsArrowsFullscreen, BsFullscreenExit, BsZoomIn, BsZoomOut } from "react-icons/bs";
 import NodesPanel from "./NodesPanel";
+import { Attributes } from "graphology-types";
 
 const Root: FC = () => {
   const [showContents, setShowContents] = useState(false);
@@ -30,8 +31,8 @@ const Root: FC = () => {
     nodes:{},
     edges: {}
   });
-  const [connections, setConnections] = useState();
-
+  const [connections, setConnections] = useState<Array<Attributes>>([]);
+  
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
  
   
@@ -81,6 +82,7 @@ const Root: FC = () => {
           setHoveredNode={setHoveredNode} 
           edges={dataset.edges}
           setEdgesSelecteds={setEdgesSelecteds}
+          setConnections={setConnections}
         />
         <GraphDataController dataset={dataset} filters={filtersState} />
 
@@ -147,9 +149,9 @@ const Root: FC = () => {
               <div className="panels">
                 <SearchField setHoveredNode={setHoveredNode} filters={filtersState} />
                 {/* <DescriptionPanel /> */}
-                <p> AA {edgesSelecteds}</p>
                  <NodesPanel
                   currentNode ={hoveredNode}
+                  connections ={connections}
                   nodes={dataset.nodes}
                   edgesSelecteds={edgesSelecteds}
                   filters={filtersState}

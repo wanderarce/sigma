@@ -6,19 +6,20 @@ import { useSigma } from "react-sigma-v2";
 import { keyBy, mapValues, sortBy, values } from "lodash";
 import Panel from "./Panel";
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/all";
+import { Attributes } from "graphology-types";
 
 const NodesPanel: FC<{
   currentNode:any;
+  connections: Array<Attributes>;
   nodes: NodeData[];
   edgesSelecteds: Array<Edge>;
   filters: FiltersState;
   toggleNode: (node: number) => void;
   setNodes: (nodes: Record<number, boolean>) => void;
-}> = ({ currentNode, nodes, edgesSelecteds, filters, toggleNode, setNodes }) => {
+}> = ({ currentNode, nodes, connections, edgesSelecteds, filters, toggleNode, setNodes }) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
-  const [eds, setEds] = useState(Array<Edge>());
-
+  
   const nodesPerNode = useMemo(() => {
     const index: Record<string, number> = {};
 
@@ -41,17 +42,17 @@ const NodesPanel: FC<{
     requestAnimationFrame(() => {
       const index: Record<number, number> = {};
       
-      console.log("E: " +edgesSelecteds);
-
-      //console.log(connections)
-      // var exist = filters.edges[currentNode];
-      // console.log("r: " + exist);
       graph.forEachNode((node, { key, hidden }) => {
-          !hidden && (index[key] = (index[key] || 0) + 1);
-        
+          !hidden && (index[key] = (index[key] || 0) + 1);  
       
       });
       setVisibleNodesPerNode(index);
+      if(currentNode !== undefined && currentNode !== null && currentNode !== ''){
+        graph.forEachNeighbor(currentNode, function(neighbor, attributes) {
+          console.log(neighbor, attributes);
+        });
+      }
+      
     });
   }, [filters]);
 
@@ -135,6 +136,12 @@ const NodesPanel: FC<{
           
           
         })}
+      </ul>
+      <ul>
+        {connections.map((node) =>{
+          return (<p>{node.label}</p>);
+        })}
+      
       </ul>
     </Panel>
   );
