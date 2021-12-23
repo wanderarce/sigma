@@ -99,7 +99,7 @@ const NodesPanel: FC<{
           const visibleNodesCount = visibleNodesPerNode[node.key] || 0;
           return (
             <li
-              className="caption-row"
+              className="caption-row card"
               key={node.key}
               title={`${nodesCount} page${nodesCount > 1 ? "s" : ""}${
                 visibleNodesCount !== nodesCount ? ` (only ${visibleNodesCount} visible)` : ""
@@ -128,6 +128,10 @@ const NodesPanel: FC<{
                   </div>
                 </div>
               </label>
+              <p><a href={node.URL} target="_blank" className="linkedin">Linkedin</a></p>
+              <p><b>Company: </b> {node.tag}</p>
+              <p><b>Office: </b> {node.cluster}</p>
+              
             </li>
           );
           } else{
@@ -137,9 +141,42 @@ const NodesPanel: FC<{
           
         })}
       </ul>
+      <p>Linked connections</p>
       <ul>
         {connections.map((node) =>{
-          return (<p>{node.label}</p>);
+          return (
+            <li
+              className="caption-row"
+              key={node.key}
+              title={`${connections.length} page${connections.length > 1 ? "s" : ""}${
+                visibleNodesCount !== connections.length ? ` (only ${visibleNodesCount} visible)` : ""
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={filters.nodes[node.key] || false}
+                onChange={() => {toggleNode(node.key);}}
+                id={`node-${node.key}`}
+              />
+              <label htmlFor={`node-${node.key}`}>
+                <span
+                  className="circle"
+                  style={{ background: "#333" }}
+                />{" "}
+                <div className="node-label">
+                  <span>{node.label}</span>
+                  <div className="bar" style={{ width: (100 * connections.length) / maxNodesPerNode + "%" }}>
+                    <div
+                      className="inside-bar"
+                      style={{
+                        width: (100 * visibleNodesCount) / connections.length + "%",
+                      }}
+                    />
+                  </div>
+                </div>
+              </label>
+            </li>
+          );
         })}
       
       </ul>
