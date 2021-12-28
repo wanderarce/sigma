@@ -49,9 +49,6 @@ const Root: FC = () => {
           nodes: mapValues(keyBy(dataset.nodes, "key"), constant(true)),
           edges: mapValues(keyBy(dataset.edges, "edge"), constant(true)),
         });
-        // setConnections({
-        //   children: getChildrens(hoveredNode, dataset.edges)
-        // });
         requestAnimationFrame(() => setDataReady(true));
       });
       
@@ -153,8 +150,8 @@ const Root: FC = () => {
                   currentNode ={hoveredNode}
                   connections ={connections}
                   nodes={dataset.nodes}
-                  edgesSelecteds={edgesSelecteds}
                   filters={filtersState}
+                  setHoveredNode={setHoveredNode}
                   setNodes={(nodes) =>
                     setFiltersState((filters) => ({
                       ...filters,
@@ -169,6 +166,7 @@ const Root: FC = () => {
                       : { ...filters.nodes, [node]: true },
                     }));
                   }}
+                  setConnections={setConnections}
                 /> 
  
                 {/* <Connections title={"bla"} currentNode={hoveredNode} 

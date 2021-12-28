@@ -259,6 +259,10 @@ ul>li {
     color: #ffffff;
 }
 
+.link {
+    cursor: pointer;
+}
+
 .caption-row input[type="checkbox"] {
     display: none;
 }

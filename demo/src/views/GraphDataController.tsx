@@ -16,7 +16,7 @@ const GraphDataController: FC<{ dataset: Dataset; filters: FiltersState }> = ({ 
 
     const clusters = keyBy(dataset.clusters, "key");
     const tags = keyBy(dataset.tags, "key");
-
+    const nodes = keyBy(dataset.nodes, "key");
     dataset.nodes.forEach((node) =>
       graph.addNode(node.key, {
         ...node,
@@ -52,10 +52,10 @@ const GraphDataController: FC<{ dataset: Dataset; filters: FiltersState }> = ({ 
    * Apply filters to graphology:
    */
   useEffect(() => {
-    const { clusters, tags } = filters;
+    const { clusters, tags, nodes } = filters;
   
-    graph.forEachNode((node, { cluster, tag }) => {
-      graph.setNodeAttribute(node, "hidden", !clusters[cluster] || !tags[tag]);
+    graph.forEachNode((node, { cluster, tag, key }) => {
+      graph.setNodeAttribute(node, "hidden", !clusters[cluster] || !tags[tag] || !nodes[key]);
     });
   }, [graph, filters]);
 

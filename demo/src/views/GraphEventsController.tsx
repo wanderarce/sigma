@@ -43,8 +43,6 @@ const GraphEventsController: FC<{ edges: Edge[];
         }
         let connections= Array<Attributes>();
         graph.forEachNeighbor(node, function(neighbor, attributes) {
-          debugger
-          console.log(neighbor, attributes);
           connections.push(attributes);
         });
         setConnections(connections);

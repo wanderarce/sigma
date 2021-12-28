@@ -2,7 +2,7 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import { MdBusiness } from "react-icons/md";
 
 import { Edge, FiltersState, NodeData } from "../types";
-import { useSigma } from "react-sigma-v2";
+import { useRegisterEvents, useSigma } from "react-sigma-v2";
 import { keyBy, mapValues, sortBy, values } from "lodash";
 import Panel from "./Panel";
 import { AiOutlineCheckCircle, AiOutlineCloseCircle } from "react-icons/all";
@@ -12,13 +12,15 @@ const NodesPanel: FC<{
   currentNode:any;
   connections: Array<Attributes>;
   nodes: NodeData[];
-  edgesSelecteds: Array<Edge>;
   filters: FiltersState;
+  setHoveredNode: (node: string | null) => void;
   toggleNode: (node: number) => void;
   setNodes: (nodes: Record<number, boolean>) => void;
-}> = ({ currentNode, nodes, connections, edgesSelecteds, filters, toggleNode, setNodes }) => {
+  setConnections: (connections: Array<Attributes>) => void;
+}> = ({ currentNode, nodes, connections, filters, setHoveredNode, toggleNode, setNodes, setConnections }) => {
   const sigma = useSigma();
   const graph = sigma.getGraph();
+  const registerEvents = useRegisterEvents();
   
   const nodesPerNode = useMemo(() => {
     const index: Record<string, number> = {};
@@ -33,7 +35,6 @@ const NodesPanel: FC<{
   const visibleNodesCount = useMemo(() => Object.keys(filters.nodes).length, [filters]);
 
   const [visibleNodesPerNode, setVisibleNodesPerNode] = useState<Record<number, number>>(nodesPerNode);
-  const [nodeSelected, setNodeSelected] = useState<NodeData | null>(null);
 
   useEffect(() => {
     // To ensure the graphology instance has up to data "hidden" values for
@@ -42,18 +43,16 @@ const NodesPanel: FC<{
     requestAnimationFrame(() => {
       const index: Record<number, number> = {};
       
-      graph.forEachNode((node, { key, hidden }) => {
+      graph.forEachNode((_, { key, hidden }) => {
           !hidden && (index[key] = (index[key] || 0) + 1);  
       
       });
       setVisibleNodesPerNode(index);
-      if(currentNode !== undefined && currentNode !== null && currentNode !== ''){
-        graph.forEachNeighbor(currentNode, function(neighbor, attributes) {
-          console.log(neighbor, attributes);
-        });
-      }
+     
       
     });
+    
+    
   }, [filters]);
 
   const sortedNodes = useMemo(
@@ -61,7 +60,20 @@ const NodesPanel: FC<{
     [nodes, nodesPerNode],
   );
 
-  
+  const filteredNeighbor = async (node) => {
+    
+    if(node !== undefined && node !== null && node !== '') {
+      var conn= Array<Attributes>();
+      setConnections([]);
+      if(graph !== null){
+        graph.forEachNeighbor(node, function(neighbor, attributes) {
+          conn.push(attributes);
+        });
+       
+      }
+      setConnections(conn);
+    }
+  };
 
   return (
     <Panel
@@ -79,7 +91,7 @@ const NodesPanel: FC<{
         </>
       }
     >
-      <p>
+      {/* <p>
         <i className="text-muted">Click a company to show/hide related pages from the network.</i>
       </p>
       <p className="buttons">
@@ -91,13 +103,15 @@ const NodesPanel: FC<{
         </button>
       </p>
       <p>Nó atual: {currentNode}</p>
-      
+       */}
       <ul>
         {sortedNodes.map((node) => {
-          if(currentNode !== undefined && currentNode !== null && currentNode == node.key){
+          if(currentNode !== undefined && currentNode !== null && currentNode > 0 && currentNode == node.key){
             const nodesCount = nodesPerNode[node.key];
-          const visibleNodesCount = visibleNodesPerNode[node.key] || 0;
-          return (
+            const visibleNodesCount = visibleNodesPerNode[node.key] || 0;
+             
+            
+            return (
             <li
               className="caption-row card"
               key={node.key}
@@ -108,15 +122,16 @@ const NodesPanel: FC<{
               <input
                 type="checkbox"
                 checked={filters.nodes[node.key] || false}
-                onChange={() => {toggleNode(node.key); setNodeSelected(node)}}
+                onChange={()=> {toggleNode(node.key);
+                  setHoveredNode(node.key.toString());}}
                 id={`node-${node.key}`}
               />
               <label htmlFor={`node-${node.key}`}>
-                <span
+                {/* <span
                   className="circle"
                   style={{ background: "#333" }}
-                />{" "}
-                <div className="node-label">
+                />{" "} */}
+                <div className="node-label"  >
                   <span>{node.label}</span>
                   <div className="bar" style={{ width: (100 * nodesCount) / maxNodesPerNode + "%" }}>
                     <div
@@ -155,15 +170,19 @@ const NodesPanel: FC<{
               <input
                 type="checkbox"
                 checked={filters.nodes[node.key] || false}
-                onChange={() => {toggleNode(node.key);}}
+                onChange={() => {toggleNode(node.key); 
+                  /*setHoveredNode(node.key.toString());*/}}
                 id={`node-${node.key}`}
               />
-              <label htmlFor={`node-${node.key}`}>
-                <span
+              <div id={`node-${node.key}`} >
+                {/* <label htmlFor={`node-${node.key}`}><span
                   className="circle"
                   style={{ background: "#333" }}
                 />{" "}
-                <div className="node-label">
+                </label> */}
+                <div className="node-label link" onClick={()=> {setHoveredNode(node.key.toString()); 
+                      filteredNeighbor(node.key);
+                }}>
                   <span>{node.label}</span>
                   <div className="bar" style={{ width: (100 * connections.length) / maxNodesPerNode + "%" }}>
                     <div
@@ -174,7 +193,7 @@ const NodesPanel: FC<{
                     />
                   </div>
                 </div>
-              </label>
+              </div>
             </li>
           );
         })}
