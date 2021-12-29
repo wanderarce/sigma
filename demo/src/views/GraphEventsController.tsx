@@ -43,6 +43,13 @@ const GraphEventsController: FC<{ edges: Edge[];
         }
         let connections= Array<Attributes>();
         graph.forEachNeighbor(node, function(neighbor, attributes) {
+          let ed;
+          try{
+              ed = graph.getEdgeAttribute(node,attributes["key"] , 'sizeAux');
+          } catch(e){
+              ed  = graph.getEdgeAttribute(attributes["key"] ,node, 'sizeAux');
+          }
+          attributes["size"] = ed;
           connections.push(attributes);
         });
         setConnections(connections);

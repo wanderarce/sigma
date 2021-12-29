@@ -26,7 +26,7 @@ const GraphDataController: FC<{ dataset: Dataset; filters: FiltersState }> = ({ 
     );
      dataset.edges.forEach((element) => {
       var ed = element.edge as Array<any>;
-      graph.addEdge(ed[0], ed[1],{ size: 0.5 });
+      graph.addEdge(ed[0], ed[1],{ size: 0.5, sizeAux: element.size });
      });
 
     // Use degrees as node sizes:

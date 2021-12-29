@@ -144,7 +144,10 @@ const Root: FC = () => {
               
               <GraphTitle filters={filtersState} />
               <div className="panels">
-                <SearchField setHoveredNode={setHoveredNode} filters={filtersState} />
+                <SearchField setHoveredNode={setHoveredNode} 
+                filters={filtersState} 
+                
+                />
                 {/* <DescriptionPanel /> */}
                  <NodesPanel
                   currentNode ={hoveredNode}

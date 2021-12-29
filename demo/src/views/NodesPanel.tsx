@@ -31,6 +31,7 @@ const NodesPanel: FC<{
     return index;
   }, []);
 
+  
   const maxNodesPerNode = useMemo(() => Math.max(...values(nodesPerNode)), [nodesPerNode]);
   const visibleNodesCount = useMemo(() => Object.keys(filters.nodes).length, [filters]);
 
@@ -59,6 +60,10 @@ const NodesPanel: FC<{
     () => sortBy(nodes, (node) => (node.key === undefined ? Infinity : -nodesPerNode[node.key])),
     [nodes, nodesPerNode],
   );
+  const sortedConnections = useMemo(
+    () => sortBy(connections,function(node) {return -node.size}  ),
+    [connections],
+  );
 
   const filteredNeighbor = async (node) => {
     
@@ -67,7 +72,15 @@ const NodesPanel: FC<{
       setConnections([]);
       if(graph !== null){
         graph.forEachNeighbor(node, function(neighbor, attributes) {
+          let ed;
+          try{
+              ed = graph.getEdgeAttribute(node,attributes["key"] , 'sizeAux');
+          } catch(e){
+              ed  = graph.getEdgeAttribute(attributes["key"] ,node, 'sizeAux');
+          }
+          attributes["size"] = ed;
           conn.push(attributes);
+          console.log(attributes);
         });
        
       }
@@ -158,13 +171,13 @@ const NodesPanel: FC<{
       </ul>
       <p>Linked connections</p>
       <ul>
-        {connections.map((node) =>{
+        {sortedConnections.map((node) =>{
           return (
             <li
               className="caption-row"
               key={node.key}
-              title={`${connections.length} page${connections.length > 1 ? "s" : ""}${
-                visibleNodesCount !== connections.length ? ` (only ${visibleNodesCount} visible)` : ""
+              title={`${sortedConnections.length} page${sortedConnections.length > 1 ? "s" : ""}${
+                visibleNodesCount !== sortedConnections.length ? ` (only ${visibleNodesCount} visible)` : ""
               }`}
             >
               <input
@@ -183,7 +196,7 @@ const NodesPanel: FC<{
                 <div className="node-label link" onClick={()=> {setHoveredNode(node.key.toString()); 
                       filteredNeighbor(node.key);
                 }}>
-                  <span>{node.label}</span>
+                  <span>{node.label} - {node?.size}</span>
                   <div className="bar" style={{ width: (100 * connections.length) / maxNodesPerNode + "%" }}>
                     <div
                       className="inside-bar"
